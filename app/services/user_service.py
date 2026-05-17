@@ -2,17 +2,24 @@ from sqlalchemy.exc import IntegrityError
 
 from app.database.database import SessionLocal
 from app.models.user_model import User
+from app.auth.security import hash_password
 
 
-def create_user(username: str, email: str):
+def create_user(
+    username: str,
+    email: str,
+    password: str
+):
 
     db = SessionLocal()
 
     try:
+        hashed_password = hash_password(password)
 
         new_user = User(
             username=username,
-            email=email
+            email=email,
+            password=hashed_password
         )
 
         db.add(new_user)

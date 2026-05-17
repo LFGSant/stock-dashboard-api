@@ -6,6 +6,14 @@ router = APIRouter()
 
 
 @router.post("/users")
-def create_new_user(username: str, email: str):
+def create_new_user(
+    username: str,
+    email: str,
+    password: str
+):
 
-    return create_user(username, email)
+    return create_user(
+        username,
+        email,
+        password
+    )
