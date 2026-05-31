@@ -2,7 +2,10 @@ from sqlalchemy.exc import IntegrityError
 
 from app.database.database import SessionLocal
 from app.models.user_model import User
-from app.auth.security import hash_password
+from app.auth.security import (
+    hash_password,
+    verify_password
+)
 
 
 def create_user(
@@ -14,6 +17,7 @@ def create_user(
     db = SessionLocal()
 
     try:
+
         hashed_password = hash_password(password)
 
         new_user = User(
@@ -40,6 +44,50 @@ def create_user(
 
         return {
             "error": "Usuário ou email já cadastrado"
+        }
+
+    finally:
+
+        db.close()
+
+
+def login_user(
+    email: str,
+    password: str
+):
+
+    db = SessionLocal()
+
+    try:
+
+        user = db.query(User).filter(
+            User.email == email
+        ).first()
+
+        if not user:
+
+            return {
+                "error": "Usuário não encontrado"
+            }
+
+        valid_password = verify_password(
+            password,
+            user.password
+        )
+
+        if not valid_password:
+
+            return {
+                "error": "Senha inválida"
+            }
+
+        return {
+            "message": "Login realizado com sucesso",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email
+            }
         }
 
     finally:
