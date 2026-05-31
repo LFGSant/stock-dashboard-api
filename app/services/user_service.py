@@ -4,7 +4,8 @@ from app.database.database import SessionLocal
 from app.models.user_model import User
 from app.auth.security import (
     hash_password,
-    verify_password
+    verify_password,
+    create_access_token
 )
 
 
@@ -81,8 +82,14 @@ def login_user(
                 "error": "Senha inválida"
             }
 
+        access_token = create_access_token(
+            data={"sub": str(user.id)}
+        )
+
         return {
             "message": "Login realizado com sucesso",
+            "access_token": access_token,
+            "token_type": "bearer",
             "user": {
                 "id": user.id,
                 "username": user.username,
